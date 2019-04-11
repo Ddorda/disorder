@@ -1,0 +1,60 @@
+body, html {
+    font-family: sans-serif;
+}
+
+/* alternating column backgrounds */
+.vis-time-axis .vis-grid.vis-odd {
+    background: #edf1f2;
+}
+.vis-time-axis .vis-grid.vis-even {
+    background: #f6f8f9;
+}
+.vis-label .vis-inner {
+  min-height: 30px;
+}
+div.vis-panel.vis-background.vis-vertical > div.vis-time-axis.vis-background > div.vis-grid.vis-vertical.vis-major.vis-current-week {
+  top: 24px !important;
+}
+
+/* draggable items */
+li.item {
+  list-style: none;
+  width: 150px;
+  color: #1A1A1A;
+  background-color: #D5DDF6;
+  border: 1px solid #97B0F8;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  padding: 5px 12px;
+  display: inline-block;
+  margin-left: 8px;
+}
+li.item:before {
+  font-family: Arial, sans-serif;
+  display: inline-block;
+  font-size: inherit;
+  cursor: move;
+}
+li.item .x-btn {
+  float: right;
+  background-color: #ff9595;
+  padding: 0 4px;
+  border-radius: 4px;
+  border: red solid 1px;
+}
+
+
+.group-2 .vis-item {
+    border-color: #f89797;
+    background-color: #f6d5d5;
+}
+
+
+.group-3 .vis-item, .group-4 .vis-item {
+  border-color: #f8c897;
+  background-color: #f6e6d5;
+}
+
+.group-5 .vis-item {
+
+}
