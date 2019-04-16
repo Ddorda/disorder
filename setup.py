@@ -32,6 +32,11 @@ unscheduled_tasks = db.Table('unscheduled_tasks', metadata,
               db.Column('title', db.String(1024), nullable=False)
               )
 
+notes = db.Table('notes', metadata,
+              db.Column('id', db.Integer(), primary_key=True),
+              db.Column('data', db.Text(), nullable=False)
+              )
+
 metadata.create_all(engine) #Creates the table
 
 # metadata.reflect(conn)
@@ -42,3 +47,7 @@ query = db.insert(tables['employees']).values(name='Dev').execute()
 query = db.insert(tables['employees']).values(name='Employee1').execute()
 query = db.insert(tables['employees']).values(name='Employee2').execute()
 query = db.insert(tables['employees']).values(name='Employee3').execute()
+
+
+# Empty Note
+query = db.insert(tables['notes']).values(data=r'{"ops":[{"insert":"Here you can put some notes"},{"attributes":{"list":"bullet"},"insert":"\n"}]}').execute()

@@ -84,7 +84,26 @@ class UnscheduledTasks(Resource):
         tables['unscheduled_tasks'].delete().where(tables['unscheduled_tasks'].c.id == del_id).execute()
         return {'id': del_id}
 
-        
+
+class Notes(Resource):
+    def get(self):
+        conn = engine.connect()
+        query = conn.execute("select data from notes")
+        data = query.cursor.fetchone()
+        if data:
+            data = data[0]
+        return {'data': data}
+
+    def post(self):
+        data = request.form['data']
+        conn = engine.connect()
+        metadata = sqlalchemy.MetaData(engine)
+        metadata.reflect()
+        tables = metadata.tables
+        tables['notes'].update().where(tables['notes'].c.id == 1).values(data=data).execute()
+        return {}
+
+
 @app.route('/')
 def root():
     return send_from_directory('static', 'index.html')
@@ -96,6 +115,7 @@ def send_static(path):
 api.add_resource(Employees, '/employees')
 api.add_resource(Tasks, '/tasks')
 api.add_resource(UnscheduledTasks, '/unscheduled_tasks')
+api.add_resource(Notes, '/notes')
 
 
 if __name__ == '__main__':

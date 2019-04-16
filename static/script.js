@@ -55,7 +55,6 @@ $.ajax({
   async: false
 });
 
-
 function updateItem(item, callback) {
     $.ajax({
     url: '/tasks',
@@ -108,7 +107,7 @@ var options = {
     }
   },
   start: new Date((new Date().getUnixTime() - 1814400) * 1000),
-  end: new Date((new Date().getUnixTime() + 2419200) * 1000),
+  end: new Date((new Date().getUnixTime() + 6652800) * 1000),
   type: 'range',
   stack: false,
   selectable: true,
@@ -192,6 +191,20 @@ $(window).keydown(function(evt) {
     endPressed = false;
   }
 });
+$(window).keypress(function(evt){
+  if (evt.which == 13 && timeline.getSelection().length == 1) {
+    item = items.get(timeline.getSelection())[0];
+    old_content = item.content;
+    item.content = prompt('Edit items text:', item.content);
+      if (item.content == null || !(item.content)) {
+        item.content = old_content;
+      }
+      else {
+        updateItem(item, function(item) {items.update(item);})
+      }
+
+  }
+});
 
 $('.side .items').on('click', '.item .x-btn', function(){
   item_id = $(this).parent().attr('item-id');
@@ -205,3 +218,60 @@ $('.side .items').on('click', '.item .x-btn', function(){
     async: false
     });
 });
+
+var Delta = Quill.import('delta');
+var quill = new Quill('#editor', {
+  theme: 'snow',
+  modules: {
+    mention: {
+      allowedChars: /^[A-Za-z]*$/,
+      mentionDenotationChars: ["@"],
+      source: function (searchTerm, renderList, mentionChar) {
+        let values = [];
+
+        groups.forEach(function(e) { values.push({id: e.id, value: e.content})});
+
+        if (searchTerm.length === 0) {
+          renderList(values, searchTerm);
+        } else {
+          const matches = [];
+          for (i = 0; i < values.length; i++)
+            if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())) matches.push(values[i]);
+          renderList(matches, searchTerm);
+        }
+      },
+    },
+  }
+});
+
+
+$.ajax({
+  url: '/notes',
+  success: function(data){
+    data = new Delta(JSON.parse(data['data']));
+    quill.setContents(data);
+  },
+  async: false
+});
+
+var change = new Delta();
+quill.on('text-change', function(delta) {
+  change = change.compose(delta);
+});
+
+// Save periodically
+setInterval(function() {
+  if (change.length() > 0) {
+    $.post('/notes', { 
+      data: JSON.stringify(quill.getContents())
+    });
+    change = new Delta();
+  }
+}, 5*1000);
+
+// Check for unsaved data
+window.onbeforeunload = function() {
+  if (change.length() > 0) {
+    return 'There are unsaved changes. Are you sure you want to leave?';
+  }
+}
